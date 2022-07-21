@@ -2,10 +2,8 @@ use std::{fs, io::Write, path::Path};
 
 use crate::plugins::{
     types::{Plugin, ProjktResult},
-    utils,
+    utils::{self, FuzzyItemType},
 };
-
-use super::utils::FuzzyItemType;
 
 // Taken from: https://doc.rust-lang.org/stable/std/sync/struct.Once.html
 mod cache {

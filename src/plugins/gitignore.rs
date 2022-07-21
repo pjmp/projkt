@@ -112,7 +112,6 @@ pub struct GitIgnore;
 
 impl GitIgnore {
     fn write(opts: &GitIgnoreOptions, data: Vec<Arc<dyn SkimItem>>) -> ProjktResult<()> {
-        dbg!(data.len());
         let dotgitignore = PathBuf::from(&opts.dest).join(".gitignore");
 
         let mut writer = File::options()
