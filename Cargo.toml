@@ -1,0 +1,19 @@
+[package]
+description = """
+Generate project related stuffs such as .gitignore, license, readme and more
+"""
+edition = "2021"
+name = "projkt"
+resolver = "2"
+version = "0.1.0"
+
+[dependencies]
+clap = {version = "3.2.12", default-features = false, features = ["derive", "std", "suggestions"]}
+dialoguer = "0.10.1"
+dirs = "4.0.0"
+skim = "0.9.4"
+spdx = {version = "0.8.1", features = ["text"]}
+ureq = {version = "2.5.0", features = ["json"]}
+
+[profile.release]
+strip = "symbols"
