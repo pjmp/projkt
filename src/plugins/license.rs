@@ -51,7 +51,7 @@ impl License {
                 let file_name = format!("LICENSE-{}", item.0);
 
                 state = write_or_create(
-                    OpenOptions::new().truncate(true).create(true).write(true),
+                    OpenOptions::new().write(true).create(true),
                     PathBuf::from(&file_name),
                     item.1.as_bytes(),
                     overwrite,

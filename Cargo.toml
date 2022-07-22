@@ -3,9 +3,11 @@ description = """
 Generate project related stuffs such as .gitignore, license, readme and more
 """
 edition = "2021"
+license = "MIT or Apache-2.0"
 name = "projkt"
+repository = "https://github.com/pjmp/projkt"
 resolver = "2"
-version = "0.1.0"
+version = "0.2.0"
 
 [dependencies]
 clap = {version = "3.2.12", default-features = false, features = ["derive", "std", "suggestions"]}

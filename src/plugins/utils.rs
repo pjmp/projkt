@@ -68,7 +68,16 @@ pub fn write_or_create(
     contents: &[u8],
     overwrite: bool,
 ) -> ProjktResult<bool> {
-    if !overwrite && !prompt(format!("modify {:?}", path.canonicalize()?))? {
+    let state = if path.exists() { "overwrite" } else { "create" };
+
+    let display = if path.exists() {
+        path.canonicalize()?
+    } else {
+        #[allow(clippy::redundant_clone)]
+        path.clone()
+    };
+
+    if !overwrite && !prompt(format!("{state} {display:?}"))? {
         return Ok(false);
     }
 
