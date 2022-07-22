@@ -101,7 +101,7 @@ impl Plugin for License {
                 .map(|item| FuzzyItemType(item.0.into(), item.1.into()))
                 .collect();
 
-            let selection = utils::fuzzy(choices)?;
+            let selection = utils::fuzzy(choices, true)?;
 
             let data = selection
                 .iter()

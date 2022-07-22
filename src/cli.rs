@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use clap::{AppSettings, Parser, Subcommand};
 
 use crate::plugins::{
-    gitignore, license,
+    gitignore, license, readme,
     types::{Plugin, ProjktResult},
 };
 
@@ -58,8 +58,10 @@ enum Commands {
     },
 
     /// Generate readme file
-    #[clap(skip)]
-    Readme,
+    Readme {
+        #[clap(value_parser, possible_values = readme::templates())]
+        name: Option<String>,
+    },
 }
 
 impl Cli {
@@ -97,8 +99,8 @@ impl Cli {
                 license::License::exec(opts)?;
             }
 
-            Commands::Readme => {
-                todo!()
+            Commands::Readme { name } => {
+                readme::Readme::exec(readme::ReadmeOptions { name })?;
             }
         }
 

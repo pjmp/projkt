@@ -14,7 +14,7 @@ impl SkimItem for FuzzyItemType {
         Cow::Owned(self.0.to_string())
     }
 
-    fn preview(&self, _context: PreviewContext) -> ItemPreview {
+    fn preview(&self, _: PreviewContext) -> ItemPreview {
         ItemPreview::Text(self.1.to_string())
     }
 
@@ -23,16 +23,14 @@ impl SkimItem for FuzzyItemType {
     }
 }
 
-pub fn fuzzy(it: Vec<FuzzyItemType>) -> types::ProjktResult<Vec<Arc<dyn SkimItem>>> {
+pub fn fuzzy(it: Vec<FuzzyItemType>, multi: bool) -> types::ProjktResult<Vec<Arc<dyn SkimItem>>> {
     let skim_options = SkimOptionsBuilder::default()
         .case(CaseMatching::Smart)
-        .height(Some("70%"))
-        .multi(true)
-        .no_mouse(false)
+        .multi(multi)
         .preview_window(Some("right:80%"))
         .preview(Some(""))
         .reverse(true)
-        .sync(true)
+        .header(Some("Select any available templates"))
         .build()?;
 
     let (tx, rx): (SkimItemSender, SkimItemReceiver) = unbounded();
@@ -45,7 +43,7 @@ pub fn fuzzy(it: Vec<FuzzyItemType>) -> types::ProjktResult<Vec<Arc<dyn SkimItem
 
     if let Some(out) = Skim::run_with(&skim_options, Some(rx)) {
         if out.is_abort {
-            return Err("".into());
+            return Err("Aborted by user".into());
         }
 
         return Ok(out.selected_items);

@@ -173,7 +173,7 @@ impl Plugin for GitIgnore {
             }
             None => {
                 let items = Self::fetch(&opts)?;
-                let selected = fuzzy(items)?;
+                let selected = fuzzy(items, true)?;
 
                 Self::write(&opts, selected)?;
 
