@@ -25,7 +25,14 @@ impl Plugin for {0} {{
 """
 
 
-def create_plugin(name, dest):
+def create_plugin(name):
+    dest = path.join(
+        path.realpath(path.curdir), "src", "plugins")
+
+    if not path.exists(dest):
+        print("Invoke this from the root of directory")
+        exit(1)
+
     file_name = f"{path.join(dest, str.lower(name))}.rs"
 
     with open(file_name, "w") as f:
@@ -40,13 +47,9 @@ def main():
     match sys.argv[1:]:
         case []:
             print("Please provide a module name")
-            exit(1)
 
         case [plugin_name]:
-            dest = path.join(
-                path.realpath(path.curdir), "src", "plugins")
-
-            create_plugin(plugin_name, dest)
+            create_plugin(plugin_name)
 
             subprocess.run(["cargo", "fmt"])
 

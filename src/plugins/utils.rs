@@ -1,4 +1,4 @@
-use std::{borrow::Cow, sync::Arc, vec};
+use std::{borrow::Cow, sync::Arc};
 
 use skim::{
     prelude::{unbounded, SkimOptionsBuilder},
