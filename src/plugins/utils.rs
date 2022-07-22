@@ -1,11 +1,11 @@
-use std::{borrow::Cow, sync::Arc};
+use std::{borrow::Cow, fs::OpenOptions, io::Write, path::PathBuf, sync::Arc};
 
 use skim::{
     prelude::{unbounded, SkimOptionsBuilder},
     CaseMatching, ItemPreview, PreviewContext, Skim, SkimItem, SkimItemReceiver, SkimItemSender,
 };
 
-use crate::plugins::types;
+use crate::plugins::types::ProjktResult;
 
 pub struct FuzzyItemType(pub String, pub String);
 
@@ -23,7 +23,7 @@ impl SkimItem for FuzzyItemType {
     }
 }
 
-pub fn fuzzy(it: Vec<FuzzyItemType>, multi: bool) -> types::ProjktResult<Vec<Arc<dyn SkimItem>>> {
+pub fn fuzzy(it: Vec<FuzzyItemType>, multi: bool) -> ProjktResult<Vec<Arc<dyn SkimItem>>> {
     let skim_options = SkimOptionsBuilder::default()
         .case(CaseMatching::Smart)
         .multi(multi)
@@ -52,10 +52,31 @@ pub fn fuzzy(it: Vec<FuzzyItemType>, multi: bool) -> types::ProjktResult<Vec<Arc
     Ok(vec![])
 }
 
-pub fn prompt(msg: String) -> types::ProjktResult<bool> {
-    let ans = dialoguer::Confirm::with_theme(&dialoguer::theme::ColorfulTheme::default())
+pub fn prompt(msg: String) -> ProjktResult<bool> {
+    use dialoguer::{theme::ColorfulTheme, Confirm};
+
+    let ans = Confirm::with_theme(&ColorfulTheme::default())
         .with_prompt(msg)
         .interact()?;
 
     Ok(ans)
+}
+
+pub fn write_or_create(
+    file_opts: &mut OpenOptions,
+    path: PathBuf,
+    contents: &[u8],
+    overwrite: bool,
+) -> ProjktResult<bool> {
+    if !overwrite && !prompt(format!("modify {:?}", path.canonicalize()?))? {
+        return Ok(false);
+    }
+
+    let mut file = file_opts.open(&path)?;
+
+    file.write_all(contents)?;
+
+    file.flush()?;
+
+    Ok(true)
 }

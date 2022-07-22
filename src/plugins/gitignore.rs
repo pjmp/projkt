@@ -1,10 +1,10 @@
-use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
+use std::{fs::OpenOptions, path::PathBuf, sync::Arc};
 
 use skim::SkimItem;
 
 use crate::plugins::{
     types::{Plugin, ProjktResult},
-    utils::{fuzzy, prompt, FuzzyItemType},
+    utils::{fuzzy, write_or_create, FuzzyItemType},
 };
 
 mod fetcher {
@@ -106,6 +106,7 @@ pub struct GitIgnoreOptions {
     pub dest: PathBuf,
     pub name: Option<String>,
     pub overwrite: bool,
+    pub append: bool,
 }
 
 pub struct GitIgnore;
@@ -114,25 +115,25 @@ impl GitIgnore {
     fn write(opts: &GitIgnoreOptions, data: Vec<Arc<dyn SkimItem>>) -> ProjktResult<()> {
         let dotgitignore = PathBuf::from(&opts.dest).join(".gitignore");
 
-        let mut writer = File::options()
-            .append(if opts.overwrite {
-                false
-            } else {
-                prompt(format!(
-                    "overwrite '{}'",
-                    dotgitignore.canonicalize()?.display()
-                ))
-                .unwrap_or_else(|_| dotgitignore.exists())
+        let contents = data
+            .iter()
+            .flat_map(|item| {
+                let ret: Box<[u8]> = Box::from(item.output().as_bytes());
+                Box::leak(ret)
             })
-            .write(true)
-            .truncate(opts.overwrite)
-            .open(&dotgitignore)?;
+            .map(|item| *item)
+            .collect::<Vec<_>>();
 
-        for item in data {
-            writer.write_all(item.output().as_bytes())?;
-        }
-
-        writer.flush()?;
+        write_or_create(
+            OpenOptions::new()
+                .write(true)
+                .create(true)
+                .truncate(opts.overwrite)
+                .append(opts.append),
+            dotgitignore,
+            contents.as_slice(),
+            opts.overwrite,
+        )?;
 
         Ok(())
     }

@@ -38,6 +38,10 @@ enum Commands {
         /// Gitignore template name, eg: rust, ocaml
         #[clap(value_parser)]
         name: Option<String>,
+
+        /// Append template to existing .gitignore file
+        #[clap(value_parser, short, long)]
+        append: bool,
     },
 
     /// Generate license file(s)
@@ -70,16 +74,20 @@ impl Cli {
             command,
             dest,
             overwrite,
-            ..
         } = Self::parse();
 
         match command {
-            Commands::Gitignore { name } => {
+            Commands::Gitignore { name, append } => {
                 let opts = gitignore::GitIgnoreOptions {
                     name,
                     dest,
                     overwrite,
+                    append,
                 };
+
+                if append && overwrite {
+                    return Err("--append & --overwrite doesn't make sense".into());
+                }
 
                 gitignore::GitIgnore::exec(opts)?;
             }
@@ -100,7 +108,7 @@ impl Cli {
             }
 
             Commands::Readme { name } => {
-                readme::Readme::exec(readme::ReadmeOptions { name })?;
+                readme::Readme::exec(readme::ReadmeOptions { name, overwrite })?;
             }
         }
 

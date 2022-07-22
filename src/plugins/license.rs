@@ -1,8 +1,8 @@
-use std::{fs, io::Write, path::Path};
+use std::{fs::OpenOptions, path::PathBuf};
 
 use crate::plugins::{
     types::{Plugin, ProjktResult},
-    utils::{self, FuzzyItemType},
+    utils::{self, write_or_create, FuzzyItemType},
 };
 
 // Taken from: https://doc.rust-lang.org/stable/std/sync/struct.Once.html
@@ -44,30 +44,18 @@ impl License {
     }
 
     fn write(data: Vec<(String, String)>, overwrite: bool) -> ProjktResult<()> {
+        #[allow(unused_assignments)]
         let changed = data
             .iter()
             .try_fold(false, |mut state, item| -> ProjktResult<bool> {
                 let file_name = format!("LICENSE-{}", item.0);
 
-                let overwrite = if Path::new(&file_name).exists() {
-                    if overwrite {
-                        true
-                    } else {
-                        utils::prompt(format!("overwrite '{file_name}'"))?
-                    }
-                } else {
-                    true
-                };
-
-                if overwrite {
-                    let mut file = fs::File::create(file_name)?;
-
-                    file.write_all(item.1.as_bytes())?;
-
-                    file.flush()?;
-
-                    state = true;
-                }
+                state = write_or_create(
+                    OpenOptions::new().truncate(true).create(true).write(true),
+                    PathBuf::from(&file_name),
+                    item.1.as_bytes(),
+                    overwrite,
+                )?;
 
                 Ok(state)
             })?;

@@ -1,20 +1,20 @@
+use std::{fs::OpenOptions, path::PathBuf};
+
 use crate::plugins::{
     types::{Plugin, ProjktResult},
-    utils::{fuzzy, FuzzyItemType},
+    utils::{fuzzy, write_or_create, FuzzyItemType},
 };
 
 pub struct ReadmeOptions {
     pub name: Option<String>,
+    pub overwrite: bool,
 }
 
 pub struct Readme;
 
 impl From<FuzzyItemType> for clap::PossibleValue<'_> {
     fn from(t: FuzzyItemType) -> Self {
-        clap::PossibleValue::new({
-            let box_a: Box<str> = Box::from(t.0.as_str());
-            Box::leak(box_a)
-        })
+        clap::PossibleValue::new(Box::leak(Box::from(t.0.as_str())))
     }
 }
 
@@ -49,7 +49,37 @@ impl Plugin for Readme {
     }
 
     fn exec(opts: Self::Opts) -> ProjktResult<()> {
-        fuzzy(Self::fetch(&opts)?, false)?;
+        let templates = Self::fetch(&opts)?;
+
+        let Self::Opts {
+            ref name,
+            overwrite,
+        } = opts;
+
+        let write = |data| -> ProjktResult<()> {
+            write_or_create(
+                OpenOptions::new().write(true).create(true),
+                PathBuf::from("README.md"),
+                data,
+                overwrite,
+            )?;
+
+            Ok(())
+        };
+
+        if let Some(ref name) = name {
+            let item = templates.iter().find(|item| item.0 == *name).unwrap();
+
+            write(item.1.as_bytes())?;
+        } else {
+            let selection = fuzzy(templates, false)?;
+
+            if !selection.is_empty() {
+                let item = &selection[0];
+
+                write(item.output().as_bytes())?;
+            }
+        }
 
         Ok(())
     }
