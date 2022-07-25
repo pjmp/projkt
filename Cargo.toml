@@ -3,7 +3,7 @@ description = """
 Generate project related stuffs such as .gitignore, license, readme and more
 """
 edition = "2021"
-license = "MIT or Apache-2.0"
+license = "MIT OR Apache-2.0"
 name = "projkt"
 repository = "https://github.com/pjmp/projkt"
 resolver = "2"
