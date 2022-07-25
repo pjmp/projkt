@@ -4,7 +4,7 @@
 
 **Generate project related stuffs such as .gitignore, license, readmes and more**
 
-[![crates.io](https://img.shields.io/crates/v/prokjt.svg?style=flat-square)](https://crates.io/crates/prokjt)
+[![crates.io](https://img.shields.io/crates/v/projkt.svg?style=flat-square)](https://crates.io/crates/projkt)
 [![github.com](https://img.shields.io/github/license/pjmp/projkt?style=flat-square)](https://github.com/pjmp/projkt)
 [![github.com](https://img.shields.io/badge/contributions-welcome-brightgreen?style=flat-square)](https://github.com/pjmp/projkt)
 </div>
