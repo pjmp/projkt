@@ -11,6 +11,7 @@
 
 ## Demo
 
+![demo](https://i.imgur.com/AZwwAnR.gif)
 
 ## Usage
 
