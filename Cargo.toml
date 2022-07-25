@@ -1,13 +1,17 @@
 [package]
+authors = ["pjmp"]
+categories = ["command-line-utilities"]
 description = """
 Generate project related stuffs such as .gitignore, license, readme and more
 """
 edition = "2021"
+homepage = "https://github.com/pjmp/projkt"
+keywords = ["projkt", "bootstrap", "generator", "boilerplate", "template"]
 license = "MIT OR Apache-2.0"
 name = "projkt"
 repository = "https://github.com/pjmp/projkt"
 resolver = "2"
-version = "0.2.0"
+version = "0.2.1"
 
 [dependencies]
 clap = {version = "3.2.12", default-features = false, features = ["derive", "std", "suggestions"]}

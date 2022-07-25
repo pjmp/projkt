@@ -9,6 +9,19 @@
 [![github.com](https://img.shields.io/badge/contributions-welcome-brightgreen?style=flat-square)](https://github.com/pjmp/projkt)
 </div>
 
+## What and why?
+
+> `projkt` is a commandline tool to generate boring stuffs such as `.gitignore`, `README`, `license` and more quickly so that you can send more time in your projects rather than skeleton files.
+
+There are many projects that does one of these things but I haven't found any that combines all of them.
+
+## Features
+
+- Fuzzy selector
+- Multi selection
+- Preview window
+- Generate gitignore, license, readme etc
+
 ## Demo
 
 ![demo](https://i.imgur.com/AZwwAnR.gif)
@@ -53,6 +66,7 @@ cargo run
 - gitignore
 - license
 - readme
+- *your suggestions*
 
 ## Contributing
 
