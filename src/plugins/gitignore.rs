@@ -27,9 +27,8 @@ mod fetcher {
             .join("gitignore.json")
     }
 
-    fn parse(val: serde_json::Value) -> ProjktResult<Vec<FuzzyItemType>> {
-        let res = val
-            .as_object()
+    fn parse(val: &serde_json::Value) -> Vec<FuzzyItemType> {
+        val.as_object()
             .expect("response is expected to be a json object")
             .iter()
             .filter_map(|(key, item)| {
@@ -37,9 +36,7 @@ mod fetcher {
                     .as_str()
                     .map(|contents| FuzzyItemType(key.to_string(), contents.into()))
             })
-            .collect();
-
-        Ok(res)
+            .collect()
     }
 
     fn fetch_from_remote() -> ProjktResult<serde_json::Value> {
@@ -96,23 +93,21 @@ mod fetcher {
             fetch_from_cache()?
         };
 
-        let response = parse(resource)?;
-
-        Ok(response)
+        Ok(parse(&resource))
     }
 }
 
 pub struct GitIgnoreOptions {
+    pub append: bool,
     pub dest: PathBuf,
     pub name: Option<String>,
     pub overwrite: bool,
-    pub append: bool,
 }
 
 pub struct GitIgnore;
 
 impl GitIgnore {
-    fn write(opts: &GitIgnoreOptions, data: Vec<Arc<dyn SkimItem>>) -> ProjktResult<()> {
+    fn write(opts: &GitIgnoreOptions, data: &[Arc<dyn SkimItem>]) -> ProjktResult<()> {
         let dotgitignore = PathBuf::from(&opts.dest).join(".gitignore");
 
         let contents = data
@@ -130,7 +125,7 @@ impl GitIgnore {
                 .create(true)
                 .truncate(opts.overwrite)
                 .append(opts.append),
-            dotgitignore,
+            &dotgitignore,
             contents.as_slice(),
             opts.overwrite,
         )?;
@@ -154,7 +149,7 @@ impl Plugin for GitIgnore {
 
                 match items.iter().find(|item| &item.0 == name) {
                     Some(template) => {
-                        Self::write(&opts, vec![Arc::new(template.1.clone())])?;
+                        Self::write(&opts, &[Arc::new(template.1.clone())])?;
                         Ok(())
                     }
 
@@ -176,7 +171,7 @@ impl Plugin for GitIgnore {
                 let items = Self::fetch(&opts)?;
                 let selected = fuzzy(items, true)?;
 
-                Self::write(&opts, selected)?;
+                Self::write(&opts, &selected)?;
 
                 Ok(())
             }

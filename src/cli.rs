@@ -7,10 +7,10 @@ use crate::plugins::{
     types::{Plugin, ProjktResult},
 };
 
-#[derive(Debug, Parser)]
+#[derive(Parser)]
 #[clap(version, about)]
 #[clap(global_settings = &[AppSettings::DisableHelpSubcommand, AppSettings::DeriveDisplayOrder])]
-pub(crate) struct Cli {
+pub struct Cli {
     #[clap(subcommand)]
     command: Commands,
 
@@ -31,7 +31,7 @@ fn validate_path(path: &str) -> Result<PathBuf, String> {
     }
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Subcommand)]
 enum Commands {
     /// Generate gitignore file
     Gitignore {
@@ -69,7 +69,7 @@ enum Commands {
 }
 
 impl Cli {
-    pub(crate) fn run() -> ProjktResult<()> {
+    pub fn run() -> ProjktResult<()> {
         let Self {
             command,
             dest,
@@ -79,10 +79,10 @@ impl Cli {
         match command {
             Commands::Gitignore { name, append } => {
                 let opts = gitignore::GitIgnoreOptions {
-                    name,
-                    dest,
-                    overwrite,
                     append,
+                    dest,
+                    name,
+                    overwrite,
                 };
 
                 if append && overwrite {
@@ -93,15 +93,15 @@ impl Cli {
             }
 
             Commands::License {
-                names,
                 author,
                 email,
+                names,
             } => {
                 let opts = license::LicenseOptions {
                     author,
                     email,
-                    overwrite,
                     names,
+                    overwrite,
                 };
 
                 license::License::exec(opts)?;

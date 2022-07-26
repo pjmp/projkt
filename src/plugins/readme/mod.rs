@@ -59,7 +59,7 @@ impl Plugin for Readme {
         let write = |data| -> ProjktResult<()> {
             write_or_create(
                 OpenOptions::new().write(true).create(true),
-                PathBuf::from("README.md"),
+                &PathBuf::from("README.md"),
                 data,
                 overwrite,
             )?;

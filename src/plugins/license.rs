@@ -29,8 +29,8 @@ mod cache {
 pub struct LicenseOptions {
     pub author: Option<String>,
     pub email: Option<String>,
-    pub overwrite: bool,
     pub names: Vec<String>,
+    pub overwrite: bool,
 }
 
 pub struct License;
@@ -43,7 +43,7 @@ impl License {
             .collect::<Vec<&str>>()
     }
 
-    fn write(data: Vec<(String, String)>, overwrite: bool) -> ProjktResult<()> {
+    fn write(data: &[(String, String)], overwrite: bool) -> ProjktResult<()> {
         #[allow(unused_assignments)]
         let changed = data
             .iter()
@@ -52,7 +52,7 @@ impl License {
 
                 state = write_or_create(
                     OpenOptions::new().write(true).create(true),
-                    PathBuf::from(&file_name),
+                    &PathBuf::from(&file_name),
                     item.1.as_bytes(),
                     overwrite,
                 )?;
@@ -64,7 +64,7 @@ impl License {
             println!(
                 r#"Note: license file(s) were created/modified. Please check manually to make sure
 nothing is out of place such as year, author, email etc are filled"#
-            )
+            );
         }
         Ok(())
     }
@@ -94,9 +94,9 @@ impl Plugin for License {
             let data = selection
                 .iter()
                 .map(|item| (item.text().to_string(), item.output().to_string()))
-                .collect();
+                .collect::<Vec<(String, String)>>();
 
-            Self::write(data, overwrite)?;
+            Self::write(data.as_slice(), overwrite)?;
         } else {
             let data = names
                 .iter()
@@ -106,9 +106,9 @@ impl Plugin for License {
 
                     (it.0.to_owned(), it.1.to_owned())
                 })
-                .collect();
+                .collect::<Vec<(String, String)>>();
 
-            Self::write(data, overwrite)?;
+            Self::write(data.as_slice(), overwrite)?;
         }
 
         Ok(())

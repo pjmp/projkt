@@ -64,7 +64,7 @@ pub fn prompt(msg: String) -> ProjktResult<bool> {
 
 pub fn write_or_create(
     file_opts: &mut OpenOptions,
-    path: PathBuf,
+    path: &PathBuf,
     contents: &[u8],
     overwrite: bool,
 ) -> ProjktResult<bool> {
@@ -73,7 +73,6 @@ pub fn write_or_create(
     let display = if path.exists() {
         path.canonicalize()?
     } else {
-        #[allow(clippy::redundant_clone)]
         path.clone()
     };
 
