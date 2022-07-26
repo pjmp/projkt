@@ -26,21 +26,26 @@ impl Plugin for {0} {{
 
 
 def create_plugin(name):
-    dest = path.join(
-        path.realpath(path.curdir), "src", "plugins")
+    dest = path.join("src", "plugins")
 
     if not path.exists(dest):
         print("Invoke this from the root of directory")
         exit(1)
 
-    file_name = f"{path.join(dest, str.lower(name))}.rs"
+    name = str.lower(name)
+
+    file_name = f"{path.join(dest, name)}.rs"
+
+    if path.exists(file_name):
+        print(f"Module named'{name}' already exist")
+        exit(1)
 
     with open(file_name, "w") as f:
         name = str.capitalize(name)
         f.write(code.format(name))
 
     with open(f"{dest}.rs", "a") as f:
-        f.write(f"\npub mod {str.lower(name)};")
+        f.write(f"\npub mod {name};")
 
 
 def main():
@@ -55,6 +60,7 @@ def main():
 
         case _:
             print("Too many arguments provided, takes max 1 args.")
+            exit(1)
 
 
 if __name__ == "__main__":
