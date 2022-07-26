@@ -68,7 +68,7 @@ pub fn write_or_create(
     contents: &[u8],
     overwrite: bool,
 ) -> ProjktResult<bool> {
-    let state = if path.exists() { "overwrite" } else { "create" };
+    let state = if path.exists() { "modify" } else { "create" };
 
     let display = if path.exists() {
         path.canonicalize()?
